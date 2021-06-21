@@ -64,5 +64,13 @@ fi
 # Configure Audacity
 cmake "${cmake_args[@]}"
 
+# On macOS - find all the .dylib files and generate dSYMs from them 
+# in the same folder. We need to do this before cleaning up the conan build cache.
+
+if [[ "${OSTYPE}" == darwin* ]]; then # macOS
+    chmod +x scripts/ci/macos/generate_dsym.sh
+    scripts/ci/macos/generate_dsym.sh
+fi
+
 # Remove build directories and sources to reduce the cache size.
 conan remove "*" --src --builds --force
