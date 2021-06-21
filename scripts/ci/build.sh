@@ -22,14 +22,16 @@ fi
 cmake --build build -j "${cpus}" --config "${AUDACITY_BUILD_TYPE}"
 
 BIN_OUTPUT_DIR=build/bin/${AUDACITY_BUILD_TYPE}
+SHARED_OUTPUT_DIR=build/shared/${AUDACITY_BUILD_TYPE}
 SYMBOLS_OUTPUT_DIR=debug
 
 mkdir ${SYMBOLS_OUTPUT_DIR}
 
 if [[ "${OSTYPE}" == msys* ]]; then # Windows
     # copy PDBs to debug folder...
-    find ${BIN_OUTPUT_DIR} -name '*.pdb' | xargs -I % cp % ${SYMBOLS_OUTPUT_DIR}
-    find ${CONAN_USER_HOME} -name '*.pdb' | xargs -I % cp % ${SYMBOLS_OUTPUT_DIR}
+    find ${BIN_OUTPUT_DIR} -name '*.pdb' | xargs -I % cp -v % ${SYMBOLS_OUTPUT_DIR}
+    find ${SHARED_OUTPUT_DIR} -name '*.pdb' | xargs -I % cp -v % ${SYMBOLS_OUTPUT_DIR}
+    find $(cygpath ${CONAN_USER_HOME}) -name '*.pdb' | xargs -I % cp -v % ${SYMBOLS_OUTPUT_DIR}
     # and remove debug symbol files from the file tree before archieving
     find ${BIN_OUTPUT_DIR} -name '*.iobj' -o -name '*.ipdb' -o -name '*.pdb' -o -name '*.ilk' | xargs rm -f
 elif [[ "${OSTYPE}" == darwin* ]]; then # macOS
